@@ -102,6 +102,12 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
         binding.viewModel = viewModel
         observeToastEvents(viewModel)
 
+        binding.setQrCodeClickListener {
+            if (findNavController().currentDestination?.id == R.id.thirdPartySipAccountLoginFragment) {
+                findNavController().navigate(R.id.qrCodeScannerFragment)
+            }
+        }
+
         binding.setOutboundProxyTooltipClickListener {
             showOutboundProxyInfoDialog()
         }
