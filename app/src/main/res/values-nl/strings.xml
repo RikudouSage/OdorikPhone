@@ -66,7 +66,7 @@
     <string name="assistant_dialog_confirm_phone_number_title">Bevestig telefoonnummer</string>
     <string name="assistant_dialog_confirm_phone_number_message">Weet u zeker dat uw telefoonnummer %s is?</string>
     <string name="assistant_scan_qr_code">Scan de QR-code</string>
-    <string name="assistant_login_third_party_sip_account_title">SIP-account van derden</string>
+    <string name="assistant_login_third_party_sip_account_title">SIP-account</string>
     <string name="assistant_login_third_party_sip_account">Gebruik een SIP-account van derden</string>
     <string name="assistant_login_using_single_sign_on">Eenmalige aanmelding</string>
     <string name="assistant_login_cant_parse_address_toast">SIP-adres is ongeldig!</string>

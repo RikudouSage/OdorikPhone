@@ -123,7 +123,7 @@
     <string name="assistant_account_login">登录</string>
     <string name="assistant_scan_qr_code">扫描二维码</string>
     <string name="assistant_login_third_party_sip_account">使用第三方SIP账户</string>
-    <string name="assistant_login_third_party_sip_account_title">第三方SIP账户</string>
+    <string name="assistant_login_third_party_sip_account_title">SIP账户</string>
     <string name="assistant_login_using_single_sign_on">单点登录</string>
     <string name="assistant_login_cant_parse_address_toast">SIP地址无效！</string>
     <string name="assistant_account_login_already_connected_error">账户已存在</string>

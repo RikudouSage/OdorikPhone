@@ -78,7 +78,7 @@
     <string name="assistant_scan_qr_code">Escanear código QR</string>
     <string name="assistant_qr_code_invalid_toast">Código QR no válido!</string>
     <string name="assistant_login_third_party_sip_account">Utilice una cuenta SIP de terceros</string>
-    <string name="assistant_login_third_party_sip_account_title">Cuenta SIP de terceros</string>
+    <string name="assistant_login_third_party_sip_account_title">Cuenta SIP</string>
     <string name="assistant_login_using_single_sign_on">Inicio de sesión único</string>
     <string name="assistant_login_cant_parse_address_toast">La dirección SIP no es válida!</string>
     <string name="assistant_account_login_already_connected_error">La cuenta ya existe</string>

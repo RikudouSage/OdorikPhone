@@ -109,7 +109,7 @@
     <string name="assistant_scan_qr_code">Scanner un QR code</string>
     <string name="assistant_qr_code_invalid_toast">Ce QR code est invalide !</string>
     <string name="assistant_login_third_party_sip_account">J\'ai un compte SIP tiers</string>
-    <string name="assistant_login_third_party_sip_account_title">Compte SIP tiers</string>
+    <string name="assistant_login_third_party_sip_account_title">Compte SIP</string>
     <string name="assistant_login_using_single_sign_on">Single sign on</string>
     <string name="assistant_login_cant_parse_address_toast">Adresse SIP invalide</string>
     <string name="assistant_login_address_without_username_toast">L\'adresse SIP ne contient pas de nom d\'utilisateur !</string>

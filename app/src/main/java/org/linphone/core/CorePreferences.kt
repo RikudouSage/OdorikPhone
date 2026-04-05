@@ -338,7 +338,11 @@ class CorePreferences
 
     @get:AnyThread @set:WorkerThread
     var pushNotificationCompatibleDomains: Array<String>
-        get() = config.getStringList("app", "push_notification_domains", arrayOf("sip.linphone.org"))
+        get() = config.getStringList(
+            "app",
+            "push_notification_domains",
+            arrayOf("sip.odorik.cz")
+        )
         set(value) {
             config.setStringList("app", "push_notification_domains", value)
         }
@@ -429,7 +433,7 @@ class CorePreferences
 
     @get:AnyThread
     val thirdPartySipAccountDefaultDomain: String
-        get() = config.getString("ui", "assistant_third_party_sip_account_domain", "")!!
+        get() = config.getString("ui", "assistant_third_party_sip_account_domain", "sip.odorik.cz")!!
 
     @get:AnyThread
     val assistantDirectlyGoToThirdPartySipAccountLogin: Boolean

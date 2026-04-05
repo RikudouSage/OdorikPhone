@@ -35,6 +35,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.R
+import org.linphone.core.TransportType
 import org.linphone.core.tools.Log
 import org.linphone.databinding.AssistantThirdPartySipAccountLoginFragmentBinding
 import org.linphone.ui.GenericActivity
@@ -90,14 +91,16 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
         )
         adapter.setDropDownViewResource(R.layout.generic_dropdown_cell)
         binding.transport.adapter = adapter
+        val initialTransportIndex = viewModel.availableTransports.indexOf(
+            viewModel.transport.value ?: TransportType.Tls.name.uppercase()
+        )
+        if (initialTransportIndex >= 0) {
+            binding.transport.setSelection(initialTransportIndex, false)
+        }
         binding.transport.onItemSelectedListener = dropdownListener
 
         binding.viewModel = viewModel
         observeToastEvents(viewModel)
-
-        binding.setBackClickListener {
-            goBack()
-        }
 
         binding.setOutboundProxyTooltipClickListener {
             showOutboundProxyInfoDialog()
@@ -159,10 +162,6 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
                 viewModel.internationalPrefixIsoCountryCode.postValue(dialPlan.isoCountryCode)
             }
         }
-    }
-
-    private fun goBack() {
-        findNavController().popBackStack()
     }
 
     private fun showOutboundProxyInfoDialog() {

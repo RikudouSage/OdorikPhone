@@ -7,9 +7,6 @@
         <import type="android.view.View" />
         <import type="android.text.InputType" />
         <variable
-            name="backClickListener"
-            type="View.OnClickListener" />
-        <variable
             name="outboundProxyTooltipClickListener"
             type="View.OnClickListener" />
         <variable
@@ -31,18 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    style="@style/icon_top_bar_button_style"
-                    android:id="@+id/back"
-                    android:onClick="@{backClickListener}"
-                    android:layout_width="@dimen/top_bar_height"
-                    android:layout_height="@dimen/top_bar_height"
-                    android:src="@drawable/caret_left"
-                    android:contentDescription="@string/content_description_go_back_icon"
-                    app:tint="?attr/color_main2_500"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/assistant_page_title_style"
                     android:id="@+id/title"
@@ -50,8 +35,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/assistant_login_third_party_sip_account_title"
                     android:textColor="?attr/color_text"
-                    app:layout_constraintTop_toTopOf="@id/back"
-                    app:layout_constraintBottom_toBottomOf="@id/back"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 

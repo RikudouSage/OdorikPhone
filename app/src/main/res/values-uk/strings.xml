@@ -145,7 +145,7 @@
     <string name="help_troubleshooting_print_logs_in_logcat">Друкувати логи в logcat</string>
     <string name="help_troubleshooting_clean_logs">Видалити логи</string>
     <string name="assistant_account_register_push_notification_not_received_error">Push-сповіщення з токеном авторизації не отримано упродовж 5 секунд, спробуйте пізніше</string>
-    <string name="assistant_login_third_party_sip_account_title">Сторонній обліковий запис SIP</string>
+    <string name="assistant_login_third_party_sip_account_title">Обліковий запис SIP</string>
     <string name="assistant_account_creation_sms_confirmation_explanation">Ми надіслали код підтвердження на ваш номер телефону %1$s.\n\nБудь ласка, введіть код підтвердження нижче:</string>
     <string name="assistant_login_third_party_sip_account">Використати сторонній обліковий запис SIP</string>
     <string name="assistant_no_account_yet">Ще немає облікового запису?</string>

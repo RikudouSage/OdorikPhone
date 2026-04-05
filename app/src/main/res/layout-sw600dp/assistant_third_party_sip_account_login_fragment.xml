@@ -7,9 +7,6 @@
         <import type="android.view.View" />
         <import type="android.text.InputType" />
         <variable
-            name="backClickListener"
-            type="View.OnClickListener" />
-        <variable
             name="outboundProxyTooltipClickListener"
             type="View.OnClickListener" />
         <variable
@@ -44,27 +41,12 @@
                     app:layout_constraintBottom_toTopOf="@id/mountains"
                     app:layout_constraintTop_toBottomOf="@id/title" />
 
-                <ImageView
-                    android:id="@+id/back"
-                    android:onClick="@{backClickListener}"
-                    android:layout_width="@dimen/top_bar_height"
-                    android:layout_height="@dimen/top_bar_height"
-                    android:layout_marginStart="40dp"
-                    android:padding="15dp"
-                    android:src="@drawable/caret_left"
-                    android:contentDescription="@string/content_description_go_back_icon"
-                    android:background="@drawable/circle_transparent_button_background"
-                    app:tint="?attr/color_main2_500"
-                    app:layout_constraintTop_toTopOf="@id/title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/title"/>
-
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/assistant_page_title_style"
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/top_bar_height"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="40dp"
                     android:layout_marginTop="@dimen/assistant_title_top_margin"
                     android:text="@string/assistant_login_third_party_sip_account_title"
                     android:textColor="?attr/color_text"
@@ -73,7 +55,7 @@
                     android:drawablePadding="10dp"
                     app:layout_constraintWidth_min="@dimen/button_max_width"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/back"/>
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/header_style"

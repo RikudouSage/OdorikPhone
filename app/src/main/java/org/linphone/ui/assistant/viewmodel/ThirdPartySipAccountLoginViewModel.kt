@@ -45,6 +45,7 @@ class ThirdPartySipAccountLoginViewModel
     constructor() : GenericViewModel() {
     companion object {
         private const val TAG = "[Third Party SIP Account Login ViewModel]"
+        private val DEFAULT_TRANSPORT = TransportType.Tls.name.uppercase()
     }
 
     val username = MutableLiveData<String>()
@@ -139,6 +140,8 @@ class ThirdPartySipAccountLoginViewModel
         showPassword.value = false
         expandAdvancedSettings.value = false
         registrationInProgress.value = false
+        proxy.value = "flexisip.odorik.chrastecky.dev"
+        transport.value = DEFAULT_TRANSPORT
 
         loginEnabled.addSource(username) {
             loginEnabled.value = isLoginButtonEnabled()
@@ -162,9 +165,18 @@ class ThirdPartySipAccountLoginViewModel
             val index = if (defaultTransport.isNotEmpty()) {
                 availableTransports.indexOf(defaultTransport)
             } else {
-                availableTransports.size - 1
+                availableTransports.indexOf(DEFAULT_TRANSPORT)
             }
-            defaultTransportIndexEvent.postValue(Event(index))
+            transport.postValue(if (index >= 0) defaultTransport else DEFAULT_TRANSPORT)
+            defaultTransportIndexEvent.postValue(
+                Event(
+                    if (index >= 0) {
+                        index
+                    } else {
+                        availableTransports.indexOf(DEFAULT_TRANSPORT)
+                    }
+                )
+            )
         }
     }
 
@@ -173,10 +185,19 @@ class ThirdPartySipAccountLoginViewModel
         coreContext.postOnCoreThread { core ->
             core.loadConfigFromXml(corePreferences.thirdPartyDefaultValuesPath)
 
+            val selectedTransport = when (transport.value.orEmpty().trim()) {
+                TransportType.Tcp.name.uppercase(Locale.getDefault()) -> TransportType.Tcp
+                TransportType.Tls.name.uppercase(Locale.getDefault()) -> TransportType.Tls
+                else -> TransportType.Udp
+            }
+            val useSecureScheme = selectedTransport == TransportType.Tls
+
             // Remove sip: in front of domain, just in case...
             val domainValue = domain.value.orEmpty().trim()
             val domainWithoutSip = if (domainValue.startsWith("sip:")) {
                 domainValue.substring("sip:".length)
+            } else if (domainValue.startsWith("sips:")) {
+                domainValue.substring("sips:".length)
             } else {
                 domainValue
             }
@@ -202,13 +223,14 @@ class ThirdPartySipAccountLoginViewModel
             val userId = authId.value.orEmpty().trim()
 
             Log.i("$TAG Parsed username is [$user], user ID [$userId] and domain [$domain]")
-            val identity = "sip:$user@$domain"
+            val identity = "${if (useSecureScheme) "sips" else "sip"}:$user@$domain"
             val identityAddress = Factory.instance().createAddress(identity)
             if (identityAddress == null) {
                 Log.e("$TAG Can't parse [$identity] as Address!")
                 showRedToast(R.string.assistant_login_cant_parse_address_toast, R.drawable.warning_circle)
                 return@postOnCoreThread
             }
+            identityAddress.secure = useSecureScheme
             Log.i("$TAG Computed SIP identity is [${identityAddress.asStringUriOnly()}]")
 
             val accounts = core.accountList
@@ -238,42 +260,65 @@ class ThirdPartySipAccountLoginViewModel
             }
             accountParams.identityAddress = identityAddress
 
+            val natPolicy = core.createNatPolicy()
+            natPolicy.stunServer = "stun.linphone.org"
+            natPolicy.isStunEnabled = true
+            natPolicy.isIceEnabled = true
+            accountParams.natPolicy = natPolicy
+
+            val pushAllowedForDomain =
+                domain in corePreferences.pushNotificationCompatibleDomains
+            accountParams.pushNotificationAllowed =
+                core.isPushNotificationAvailable && pushAllowedForDomain
+            Log.i(
+                "$TAG Push notification allowed for account=[${accountParams.pushNotificationAllowed}] " +
+                    "(coreAvailable=[${core.isPushNotificationAvailable}], domainAllowed=[$pushAllowedForDomain])"
+            )
+            Log.i(
+                "$TAG Configured NAT policy for third-party account with STUN server " +
+                    "[${natPolicy.stunServer}] and ICE enabled=[${natPolicy.isIceEnabled}]"
+            )
+
             val proxyServerValue = proxy.value.orEmpty().trim()
             val proxyServerAddress = if (proxyServerValue.isNotEmpty()) {
-                val server = if (proxyServerValue.startsWith("sip:")) {
+                val server = if (proxyServerValue.startsWith("sip:") || proxyServerValue.startsWith("sips:")) {
                     proxyServerValue
                 } else {
-                    "sip:$proxyServerValue"
+                    "${if (useSecureScheme) "sips" else "sip"}:$proxyServerValue"
                 }
                 Factory.instance().createAddress(server)
             } else {
                 domainAddress ?: Factory.instance().createAddress("sip:$domainWithoutSip")
             }
-            proxyServerAddress?.transport = when (transport.value.orEmpty().trim()) {
-                TransportType.Tcp.name.uppercase(Locale.getDefault()) -> TransportType.Tcp
-                TransportType.Tls.name.uppercase(Locale.getDefault()) -> TransportType.Tls
-                else -> TransportType.Udp
-            }
-            Log.i("$TAG Created proxy server SIP address [${proxyServerAddress?.asStringUriOnly()}]")
+            proxyServerAddress?.transport = selectedTransport
+            proxyServerAddress?.secure = useSecureScheme
+            Log.i(
+                "$TAG Created proxy server SIP address [${proxyServerAddress?.asStringUriOnly()}], secure=[$useSecureScheme]"
+            )
             accountParams.serverAddress = proxyServerAddress
+
+            if (useSecureScheme) {
+                val customContact = identityAddress.clone()
+                customContact.secure = true
+                customContact.transport = TransportType.Tls
+                accountParams.customContact = customContact
+                Log.i("$TAG Configured secure custom contact [${customContact.asStringUriOnly()}]")
+            }
 
             val outboundProxyValue = outboundProxy.value.orEmpty().trim()
             val outboundProxyAddress = if (outboundProxyValue.isNotEmpty()) {
-                val server = if (outboundProxyValue.startsWith("sip:")) {
+                val server = if (outboundProxyValue.startsWith("sip:") || outboundProxyValue.startsWith("sips:")) {
                     outboundProxyValue
                 } else {
-                    "sip:$outboundProxyValue"
+                    "${if (useSecureScheme) "sips" else "sip"}:$outboundProxyValue"
                 }
                 Factory.instance().createAddress(server)
             } else {
                 null
             }
             if (outboundProxyAddress != null) {
-                outboundProxyAddress.transport = when (transport.value.orEmpty().trim()) {
-                    TransportType.Tcp.name.uppercase(Locale.getDefault()) -> TransportType.Tcp
-                    TransportType.Tls.name.uppercase(Locale.getDefault()) -> TransportType.Tls
-                    else -> TransportType.Udp
-                }
+                outboundProxyAddress.transport = selectedTransport
+                outboundProxyAddress.secure = useSecureScheme
                 Log.i("$TAG Created outbound proxy server SIP address [${outboundProxyAddress?.asStringUriOnly()}]")
                 accountParams.setRoutesAddresses(arrayOf(outboundProxyAddress))
             }
