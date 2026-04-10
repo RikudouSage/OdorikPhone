@@ -8,7 +8,7 @@
     <entry name="quality_reporting_collector" overwrite="true"></entry>
     <entry name="quality_reporting_enabled" overwrite="true">0</entry>
     <entry name="quality_reporting_interval" overwrite="true">0</entry>
-    <entry name="reg_expires" overwrite="true">3600</entry>
+    <entry name="reg_expires" overwrite="true">259200</entry>
     <entry name="reg_identity" overwrite="true"></entry>
     <entry name="reg_proxy" overwrite="true"></entry>
     <entry name="reg_route" overwrite="true"></entry>
