@@ -172,11 +172,8 @@ class DrawerMenuViewModel
 
     @WorkerThread
     fun checkIfKeepAliveServiceIsEnabled() {
-        val useKeepAliveService = corePreferences.keepServiceAlive
-        hideQuitButton.postValue(!useKeepAliveService)
-        if (useKeepAliveService) {
-            Log.i("$TAG Keep alive service is enabled, do not hide quit button")
-        }
+        hideQuitButton.postValue(false)
+        Log.i("$TAG Quit button is always visible")
     }
 
     @WorkerThread
