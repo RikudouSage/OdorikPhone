@@ -140,7 +140,7 @@ class ThirdPartySipAccountLoginViewModel
         showPassword.value = false
         expandAdvancedSettings.value = false
         registrationInProgress.value = false
-        proxy.value = "linphone.odorik.cz"
+        proxy.value = "sips:linphone.odorik.cz:61346"
         transport.value = DEFAULT_TRANSPORT
 
         loginEnabled.addSource(username) {
