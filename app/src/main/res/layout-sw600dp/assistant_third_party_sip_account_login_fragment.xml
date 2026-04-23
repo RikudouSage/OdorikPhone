@@ -416,7 +416,7 @@
                     android:layout_marginEnd="16dp"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
-                    android:text="@={viewModel.outboundProxy, default=`sip12.example.net`}"
+                    android:text="@={viewModel.proxy, default=`sip.example.net`}"
                     android:textSize="14sp"
                     android:textColor="?attr/color_main2_600"
                     android:background="@drawable/edit_text_background"
