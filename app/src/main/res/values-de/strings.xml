@@ -91,7 +91,7 @@
     <string name="assistant_scan_qr_code">QR-Code scannen</string>
     <string name="assistant_qr_code_invalid_toast">Ungültiger QR-Code!</string>
     <string name="assistant_login_third_party_sip_account">Drittanbieter-SIP-Konto verwenden</string>
-    <string name="assistant_login_third_party_sip_account_title">Drittanbieter-SIP-Konto</string>
+    <string name="assistant_login_third_party_sip_account_title">SIP-Konto</string>
     <string name="assistant_login_using_single_sign_on">Single Sign-on</string>
     <string name="assistant_login_cant_parse_address_toast">SIP Adresse ist ungültig!</string>
     <string name="assistant_login_address_without_username_toast">SIP Adresse enthält keinen Benutzernamen!</string>

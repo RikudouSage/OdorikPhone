@@ -147,7 +147,7 @@
     <string name="assistant_account_login">Login</string>
     <string name="assistant_scan_qr_code">Escanear QR code</string>
     <string name="assistant_login_third_party_sip_account">Usar uma conta SIP de terceiros</string>
-    <string name="assistant_login_third_party_sip_account_title">Conta SIP de terceiros</string>
+    <string name="assistant_login_third_party_sip_account_title">Conta SIP</string>
     <string name="assistant_login_using_single_sign_on">Login único</string>
     <string name="assistant_login_cant_parse_address_toast">O endereço SIP é inválido!</string>
     <string name="assistant_account_login_already_connected_error">A conta já existe</string>

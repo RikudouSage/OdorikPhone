@@ -119,7 +119,7 @@
     <string name="welcome_page_2_title">Безопасный</string>
     <string name="file_successfully_exported_to_media_store_toast">Файл экспортирован в собственную галерею</string>
     <string name="export_file_to_media_store_error_toast">Ошибка при попытке экспортировать файл в собственную галерею</string>
-    <string name="assistant_login_third_party_sip_account_title">Сторонний SIP-аккаунт</string>
+    <string name="assistant_login_third_party_sip_account_title">SIP-аккаунт</string>
     <string name="settings_contacts_carddav_use_as_default_title">Хранить недавно созданные контакты здесь</string>
     <string name="settings_contacts_carddav_deleted_toast">Учетная запись CardDAV удалена</string>
     <string name="settings_contacts_ldap_server_url_title">URL-адрес сервера (не может быть пустым)</string>

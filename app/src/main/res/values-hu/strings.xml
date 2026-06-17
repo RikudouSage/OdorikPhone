@@ -120,7 +120,7 @@
     <string name="media_playback_low_volume_warning_toast">A hangerő alacsony, lehet, nem hall semmit!</string>
     <string name="remote_provisioning_config_failed_toast">Hiba történt a távoli konfiguráció letöltése és alkalmazása közben</string>
     <string name="assistant_login_third_party_sip_account">Harmadik féltől származó SIP fiók használata</string>
-    <string name="assistant_login_third_party_sip_account_title">Harmadik féltől származó SIP fiók</string>
+    <string name="assistant_login_third_party_sip_account_title">SIP fiók</string>
     <string name="assistant_no_account_yet">Nincs még fiókja?</string>
     <string name="assistant_account_creation_sms_confirmation_title">Erősítse meg telefonszámát</string>
     <string name="assistant_account_creation_sms_confirmation_explanation">Elküldtünk egy azonosítási kódot a %1$s telefonszámra.\n\nKérjük adja meg itt az azonosítási kódot:</string>

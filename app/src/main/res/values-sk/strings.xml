@@ -90,7 +90,7 @@
     <string name="assistant_qr_code_invalid_toast">Neplatný QR kód!</string>
     <string name="assistant_scan_qr_code">Naskenovať QR kód</string>
     <string name="assistant_login_third_party_sip_account">Použiť SIP účet tretej strany</string>
-    <string name="assistant_login_third_party_sip_account_title">SIP účet tretej strany</string>
+    <string name="assistant_login_third_party_sip_account_title">SIP účet</string>
     <string name="assistant_login_using_single_sign_on">Jednotné prihlásenie</string>
     <string name="assistant_login_cant_parse_address_toast">Neplatná SIP adresa!</string>
     <string name="assistant_login_address_without_username_toast">SIP adresa neobsahuje používateľské meno!</string>

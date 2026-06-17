@@ -7,10 +7,10 @@
         <import type="android.view.View" />
         <import type="android.text.InputType" />
         <variable
-            name="backClickListener"
+            name="outboundProxyTooltipClickListener"
             type="View.OnClickListener" />
         <variable
-            name="outboundProxyTooltipClickListener"
+            name="qrCodeClickListener"
             type="View.OnClickListener" />
         <variable
             name="viewModel"
@@ -44,27 +44,12 @@
                     app:layout_constraintBottom_toTopOf="@id/mountains"
                     app:layout_constraintTop_toBottomOf="@id/title" />
 
-                <ImageView
-                    android:id="@+id/back"
-                    android:onClick="@{backClickListener}"
-                    android:layout_width="@dimen/top_bar_height"
-                    android:layout_height="@dimen/top_bar_height"
-                    android:layout_marginStart="40dp"
-                    android:padding="15dp"
-                    android:src="@drawable/caret_left"
-                    android:contentDescription="@string/content_description_go_back_icon"
-                    android:background="@drawable/circle_transparent_button_background"
-                    app:tint="?attr/color_main2_500"
-                    app:layout_constraintTop_toTopOf="@id/title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/title"/>
-
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/assistant_page_title_style"
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/top_bar_height"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="40dp"
                     android:layout_marginTop="@dimen/assistant_title_top_margin"
                     android:text="@string/assistant_login_third_party_sip_account_title"
                     android:textColor="?attr/color_text"
@@ -73,7 +58,64 @@
                     android:drawablePadding="10dp"
                     app:layout_constraintWidth_min="@dimen/button_max_width"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/back"/>
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/secondary_button_label_style"
+                    android:id="@+id/scan_qr_code"
+                    android:onClick="@{qrCodeClickListener}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/assistant_scan_qr_code"
+                    android:drawableStart="@drawable/qr_code"
+                    android:drawablePadding="8dp"
+                    app:drawableTint="@color/secondary_button_label_color"
+                    app:layout_constraintWidth_max="@dimen/button_max_width"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    app:layout_constraintStart_toStartOf="@id/title"
+                    app:layout_constraintEnd_toEndOf="@id/title" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/default_text_style"
+                    android:id="@+id/or"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/or"
+                    android:textSize="14sp"
+                    android:textColor="?attr/color_main2_500"
+                    app:layout_constraintTop_toBottomOf="@id/scan_qr_code"
+                    app:layout_constraintStart_toStartOf="@id/title"
+                    app:layout_constraintEnd_toEndOf="@id/title" />
+
+                <View
+                    android:id="@+id/or_left_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="?attr/color_main2_200"
+                    app:layout_constraintTop_toTopOf="@id/or"
+                    app:layout_constraintBottom_toBottomOf="@id/or"
+                    app:layout_constraintStart_toStartOf="@id/title"
+                    app:layout_constraintEnd_toStartOf="@id/or" />
+
+                <View
+                    android:id="@+id/or_right_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?attr/color_main2_200"
+                    app:layout_constraintTop_toTopOf="@id/or"
+                    app:layout_constraintBottom_toBottomOf="@id/or"
+                    app:layout_constraintStart_toEndOf="@id/or"
+                    app:layout_constraintEnd_toEndOf="@id/title" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/header_style"
@@ -86,7 +128,7 @@
                     android:labelFor="@id/username"
                     android:text="@{@string/username + `*`}"
                     app:layout_constraintVertical_chainStyle="packed"
-                    app:layout_constraintTop_toBottomOf="@id/title"
+                    app:layout_constraintTop_toBottomOf="@id/or"
                     app:layout_constraintBottom_toTopOf="@id/username"
                     app:layout_constraintStart_toStartOf="@id/username"/>
 
@@ -373,7 +415,7 @@
                     android:layout_marginEnd="16dp"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
-                    android:text="@={viewModel.outboundProxy, default=`sip12.example.net`}"
+                    android:text="@={viewModel.proxy, default=`sip.example.net`}"
                     android:textSize="14sp"
                     android:textColor="?attr/color_main2_600"
                     android:background="@drawable/edit_text_background"

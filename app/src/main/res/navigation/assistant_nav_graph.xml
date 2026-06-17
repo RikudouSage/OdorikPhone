@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/assistant_nav_graph"
-    app:startDestination="@id/landingFragment">
+    app:startDestination="@id/thirdPartySipAccountLoginFragment">
 
     <fragment
         android:id="@+id/registerFragment"
@@ -31,13 +31,13 @@
     <fragment
         android:id="@+id/thirdPartySipAccountLoginFragment"
         android:name="org.linphone.ui.assistant.fragment.ThirdPartySipAccountLoginFragment"
-        android:label="ThirdPartySipAccountLoginFragment"
+        android:label="SipAccountLoginFragment"
         tools:layout="@layout/assistant_third_party_sip_account_login_fragment" />
 
     <fragment
         android:id="@+id/thirdPartySipAccountWarningFragment"
         android:name="org.linphone.ui.assistant.fragment.ThirdPartySipAccountWarningFragment"
-        android:label="ThirdPartySipAccountWarningFragment"
+        android:label="SipAccountWarningFragment"
         tools:layout="@layout/assistant_third_party_sip_account_warning_fragment" >
 
         <action
@@ -89,7 +89,7 @@
 
         <action
             android:id="@+id/action_permissionsFragment_to_landingFragment"
-            app:destination="@id/landingFragment"
+            app:destination="@id/thirdPartySipAccountLoginFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
