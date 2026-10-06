@@ -103,11 +103,12 @@ android {
     compileSdk = 37
 
     defaultConfig {
+        manifestPlaceholders += mapOf()
         applicationId = packageName
         minSdk = 28
         targetSdk = 37
-        versionCode = 900002 // prefixed by 9, sequential
-        versionName = "6.2.0.1"
+        versionCode = 900003 // prefixed by 9, sequential
+        versionName = "6.2.0.2"
 
         manifestPlaceholders["appAuthRedirectScheme"] = packageName
 
