@@ -235,7 +235,7 @@
                         <ImageView
                             android:id="@+id/video_call"
                             android:onClick="@{() -> viewModel.startVideoCall()}"
-                            android:visibility="@{viewModel.videoCallDisabled ? View.GONE : View.VISIBLE}"
+                            android:visibility="@{View.GONE}"
                             android:enabled="@{viewModel.atLeastOneSipAddressOrPhoneNumber}"
                             android:layout_width="56dp"
                             android:layout_height="56dp"
@@ -253,7 +253,7 @@
                             style="@style/default_text_style"
                             android:id="@+id/video_call_label"
                             android:onClick="@{() -> viewModel.startVideoCall()}"
-                            android:visibility="@{viewModel.videoCallDisabled ? View.GONE : View.VISIBLE}"
+                            android:visibility="@{View.GONE}"
                             android:enabled="@{viewModel.atLeastOneSipAddressOrPhoneNumber}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
