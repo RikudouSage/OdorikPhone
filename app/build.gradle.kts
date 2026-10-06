@@ -47,6 +47,7 @@ try {
         .inputStream.bufferedReader().use(BufferedReader::readText)
         .trim()
     println("Git describe: $gitDescribe")
+    val gitTagVersion = gitDescribe.removePrefix("v")
 
     val gitCommitsCount = ProcessBuilder()
         .command("git", "rev-list", "$gitDescribe..HEAD", "--count")
@@ -74,9 +75,9 @@ try {
 
     gitVersion =
         if (gitCommitsCount.toInt() == 0) {
-            gitDescribe
+            gitTagVersion
         } else {
-            "$gitDescribe.$gitCommitsCount+$gitCommitHash"
+            "$gitTagVersion.$gitCommitsCount+$gitCommitHash"
         }
 } catch (e: Exception) {
     println("Git not found [$e], using $gitVersion")
@@ -123,7 +124,7 @@ android {
         variant.outputs
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
-                output.outputFileName = "linphone-android-${variant.buildType.name}-$gitVersion.apk"
+                output.outputFileName = "odorik-phone-${variant.buildType.name}-$gitVersion.apk"
             }
     }
 
