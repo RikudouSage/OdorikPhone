@@ -79,6 +79,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
+          archive: false
 
       - name: Upload APK to GitHub release
         if: github.event_name == 'release'
