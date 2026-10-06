@@ -36,7 +36,10 @@ jobs:
             sdkmanager_status=${PIPESTATUS[1]}
             test "$sdkmanager_status" -eq 0
           }
-          "$sdkmanager" --install "platforms;android-37" "build-tools;37.0.0"
+          "$sdkmanager" --install "platforms;android-37.0" "build-tools;37.0.0"
+          if [ ! -e "$ANDROID_HOME/platforms/android-37" ]; then
+            ln -s android-37.0 "$ANDROID_HOME/platforms/android-37"
+          fi
 
       - name: Create signing files
         env:
