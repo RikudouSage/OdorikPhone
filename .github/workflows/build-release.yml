@@ -99,3 +99,10 @@ jobs:
           apk_files=(app/build/outputs/apk/release/*.apk)
           test "${#apk_files[@]}" -eq 1
           gh release upload "$RELEASE_TAG" "${apk_files[0]}" --clobber
+
+      - name: Mark GitHub release as latest
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release edit "$RELEASE_TAG" --latest
