@@ -41,7 +41,7 @@ var gitVersion = "6.2.8.0"
 var gitBranch = ""
 try {
     val gitDescribe = ProcessBuilder()
-        .command("git", "describe", "--abbrev=0")
+        .command("git", "describe", "--tags", "--abbrev=0")
         .directory(project.rootDir)
         .start()
         .inputStream.bufferedReader().use(BufferedReader::readText)
