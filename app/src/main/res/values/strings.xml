@@ -114,6 +114,7 @@
     </plurals>
     <string name="notification_file_transfer_upload_download_message" translatable="false">%s, %s</string>
     <string name="notification_keep_app_alive_message">Click to open</string>
+    <string name="notification_keep_app_alive_description">This notification keeps app alive while in background</string>
     <string name="notification_enable_speaker_for_call">Turn on speaker</string>
     <string name="notification_disable_speaker_for_call">Turn off speaker</string>
     <string name="notification_account_registration_error_title">Account %s registration failed!</string>
@@ -132,6 +133,7 @@
     <string name="welcome_page_3_message">A <b>free</b> and open source application since <b>2001</b>.</string>
 
     <!-- Generic toasts -->
+    <string name="phone_number_copied_to_clipboard_toast">Phone number copied into clipboard</string>
     <string name="sip_address_copied_to_clipboard_toast">SIP address copied into clipboard</string>
     <string name="new_account_configured_toast">New account configured</string>
     <string name="file_successfully_exported_to_media_store_toast">File has been exported to native gallery</string>
@@ -189,6 +191,7 @@
     <string name="assistant_permissions_post_notifications_title"><b>Post notifications:</b> To be informed when you receive a message or a call.</string>
     <string name="assistant_permissions_record_audio_title"><b>Record audio:</b> So your correspondent can hear you and to record voice messages.</string>
     <string name="assistant_permissions_access_camera_title"><b>Access camera:</b> To capture video during video calls and conferences.</string>
+    <string name="assistant_permissions_access_local_network_title"><b>Access local network (optional):</b> Required since Android 17 to be able to connect to a server located on the local network.</string>
     <string name="assistant_forgotten_password_title">Account recovery</string>
     <string name="assistant_forgotten_password_subtitle">Choose how to recover your account.</string>
     <string name="assistant_forgotten_password_message">You created your account using:</string>
@@ -270,6 +273,7 @@
     <string name="settings_calls_change_ringtone_picker_unavailable_toast">Ringtone picker isn\'t available!</string>
     <string name="settings_advanced_calls_rfc_2833_dmtf_title">Use RFC 2833 for DTMFs</string>
     <string name="settings_advanced_calls_sip_info_dmtf_title">Use SIP INFO for DTMFs</string>
+    <string name="settings_advanced_calls_proximity_sensor_title">Use proximity sensor to turn OFF the screen when near the ear</string>
     <string name="settings_conversations_title">Conversations</string>
     <string name="settings_conversations_auto_download_title">Auto-download files</string>
     <string name="settings_conversations_auto_export_media_to_native_gallery_title">Make downloaded media public</string>

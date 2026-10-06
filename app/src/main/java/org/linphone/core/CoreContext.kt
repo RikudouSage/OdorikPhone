@@ -24,7 +24,12 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.POWER_SERVICE
+import android.content.Context.SENSOR_SERVICE
 import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -48,7 +53,6 @@ import org.linphone.contacts.ContactsManager
 import org.linphone.core.tools.Log
 import org.linphone.notifications.NotificationsManager
 import org.linphone.telecom.TelecomManager
-import org.linphone.ui.call.CallActivity
 import org.linphone.utils.ActivityMonitor
 import org.linphone.utils.AppUtils
 import org.linphone.utils.AudioUtils
@@ -144,6 +148,7 @@ class CoreContext
             if (!addedDevices.isNullOrEmpty()) {
                 Log.i("$TAG [${addedDevices.size}] new device(s) have been added:")
                 var atLeastOneNewDeviceIsBluetooth = false
+                var atLeastOneNewDeviceIsHeadset = false
                 for (device in addedDevices) {
                     Log.i(
                         "$TAG Added device [${device.productName}] with ID [${device.id}] and type [${device.type}]"
@@ -152,6 +157,10 @@ class CoreContext
                     when (device.type) {
                         AudioDeviceInfo.TYPE_BLUETOOTH_SCO, AudioDeviceInfo.TYPE_BLE_HEADSET, AudioDeviceInfo.TYPE_BLE_SPEAKER, AudioDeviceInfo.TYPE_HEARING_AID, AudioDeviceInfo.TYPE_BLE_HEARING_AID -> {
                             atLeastOneNewDeviceIsBluetooth = true
+                        }
+
+                        AudioDeviceInfo.TYPE_USB_HEADSET, AudioDeviceInfo.TYPE_WIRED_HEADPHONES, AudioDeviceInfo.TYPE_WIRED_HEADSET -> {
+                            atLeastOneNewDeviceIsHeadset = true
                         }
                         else -> {}
                     }
@@ -164,7 +173,10 @@ class CoreContext
 
                     if (atLeastOneNewDeviceIsBluetooth && core.callsNb > 0 && corePreferences.routeAudioToBluetoothWhenPossible) {
                         Log.i("$TAG It seems a bluetooth device is now available, trying to route audio to it")
-                        AudioUtils.routeAudioToEitherBluetoothOrHearingAid()
+                        AudioUtils.routeAudioBluetoothOrHearingAid()
+                    } else if (atLeastOneNewDeviceIsHeadset && core.callsNb > 0) {
+                        Log.i("$TAG It seems a headset or headphones device is now available, trying to route audio to it")
+                        AudioUtils.routeAudioToHeadset()
                     }
                 }, 500)
             }
@@ -358,17 +370,31 @@ class CoreContext
                 }
                 Call.State.OutgoingRinging, Call.State.OutgoingEarlyMedia -> {
                     if (corePreferences.routeAudioToBluetoothWhenPossible) {
-                        Log.i("$TAG Trying to route audio to either bluetooth or hearing aid if available")
-                        AudioUtils.routeAudioToEitherBluetoothOrHearingAid(call)
+                        Log.i("$TAG Trying to route audio to either bluetooth, hearing aid, headphones or headset if available")
+                        AudioUtils.routeAudioToAnyConnectedAudioDeviceOtherThanEarpieceAndSpeaker(call)
                     }
                 }
                 Call.State.Connected -> {
                     postOnMainThread {
                         showCallActivity()
                     }
+
+                    if (previousCallState == Call.State.IncomingEarlyMedia && core.ringDuringIncomingEarlyMedia && !LinphoneUtils.isVideoEnabled(call)) {
+                        Log.i("$TAG Audio call is in Connected state and was in IncomingEarlyMedia before with ring during early media enabled")
+                        val earpiece = core.audioDevices.find {
+                            it.type == AudioDevice.Type.Earpiece
+                        }
+                        if (earpiece != null) {
+                            Log.i("$TAG Switching audio back to earpiece ([${earpiece.id}])")
+                            call.outputAudioDevice = earpiece
+                        } else {
+                            Log.w("$TAG No earpiece device found")
+                        }
+                    }
+
                     if (corePreferences.routeAudioToBluetoothWhenPossible) {
-                        Log.i("$TAG Call is connected, trying to route audio to either bluetooth or hearing aid if available")
-                        AudioUtils.routeAudioToEitherBluetoothOrHearingAid(call)
+                        Log.i("$TAG Call is connected, trying to route audio to either bluetooth, hearing aid, headphones or headset if available")
+                        AudioUtils.routeAudioToAnyConnectedAudioDeviceOtherThanEarpieceAndSpeaker(call)
                     }
                 }
                 Call.State.StreamsRunning -> {
@@ -591,6 +617,24 @@ class CoreContext
         }
     }
 
+    private val proximitySensorListener = object : SensorEventListener {
+        override fun onAccuracyChanged(
+            sensor: Sensor?,
+            accuracy: Int
+        ) {
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            if (event?.sensor?.type == Sensor.TYPE_PROXIMITY) {
+                if (event.values[0] == 0f) {
+                    Log.i("$TAG Proximity sensor triggered, screen will turn off")
+                } else {
+                    Log.i("$TAG Proximity sensor released, screen will turn back on")
+                }
+            }
+        }
+    }
+
     init {
         (context as Application).registerActivityLifecycleCallbacks(activityMonitor)
     }
@@ -765,12 +809,21 @@ class CoreContext
                 PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
                 "${context.packageName};proximity_sensor"
             )
+            val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
+            val proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
+            val added = sensorManager.registerListener(proximitySensorListener, proximity, SensorManager.SENSOR_DELAY_NORMAL)
+            if (!added) {
+                Log.e("$TAG Failed to add proximity sensor listener!")
+            }
         }
     }
 
     @WorkerThread
     private fun onCoreStopped() {
         Log.w("$TAG Core is being shut down, notifying managers so they can remove their listeners and do some cleanup if needed")
+        val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
+        sensorManager.unregisterListener(proximitySensorListener)
+
         contactsManager.onCoreStopped(core)
         telecomManager.onCoreStopped(core)
         notificationsManager.onCoreStopped(core)
@@ -857,6 +910,16 @@ class CoreContext
         mainThread.post {
             lambda.invoke()
         }
+    }
+
+    @AnyThread
+    fun postOnMainThreadDelayed(
+        @WorkerThread lambda: () -> Unit,
+        delay: Long
+    ) {
+        mainThread.postDelayed({
+            lambda.invoke()
+        }, delay)
     }
 
     @UiThread
@@ -1119,11 +1182,7 @@ class CoreContext
     @UiThread
     fun showCallActivity() {
         Log.i("$TAG Starting Call activity")
-        val intent = Intent(context, CallActivity::class.java)
-        // This flag is required to start an Activity from a Service context
-        intent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        )
+        val intent = LinphoneUtils.getCallActivityIntent(context)
         val options = Compatibility.getPendingIntentActivityOptions(true)
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -1304,6 +1363,11 @@ class CoreContext
 
     @UiThread
     fun enableProximitySensor(enable: Boolean) {
+        if (enable && !corePreferences.useProximitySensor) {
+            Log.w("$TAG App tried to enable proximity sensor but it's been disabled in settings, doing nothing")
+            return
+        }
+
         if (::proximityWakeLock.isInitialized) {
             if (enable && !proximityWakeLock.isHeld) {
                 Log.i("$TAG Acquiring proximity sensor wake lock for 2 hours")

@@ -37,7 +37,7 @@ if (crashlyticsAvailable) {
     println("Crashlytics has been disabled because either google-services.json file wasn't found or local Linphone SDK build folder isn't configured")
 }
 
-var gitVersion = "6.2.0.1"
+var gitVersion = "6.2.8"
 var gitBranch = ""
 try {
     val gitDescribe = ProcessBuilder()

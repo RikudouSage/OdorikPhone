@@ -19,6 +19,8 @@
  */
 package org.linphone.utils
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -54,6 +56,7 @@ import org.linphone.core.Friend
 import org.linphone.core.MediaDirection
 import org.linphone.core.Reason
 import org.linphone.core.tools.Log
+import org.linphone.ui.call.CallActivity
 import org.linphone.ui.main.contacts.model.ContactAvatarModel
 import org.linphone.ui.main.model.isEndToEndEncryptionMandatory
 
@@ -65,6 +68,14 @@ class LinphoneUtils {
         const val RECORDING_FILE_NAME_URI_TIMESTAMP_SEPARATOR = "_on_"
         const val RECORDING_MKV_FILE_EXTENSION = ".mkv"
         const val RECORDING_SMFF_FILE_EXTENSION = ".smff"
+
+        @AnyThread
+        fun getCallActivityIntent(context: Context): Intent {
+            return Intent(context, CallActivity::class.java).apply {
+                action = Intent.ACTION_MAIN // Needed as well
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            }
+        }
 
         @AnyThread
         fun getRemoteProvisioningUrlFromUri(uri: String): String? {
@@ -397,15 +408,24 @@ class LinphoneUtils {
         }
 
         @WorkerThread
-        fun getChatRoomParamsToCancelMeeting(): ConferenceParams? {
-            val chatRoomParams = coreContext.core.createConferenceParams(null)
+        fun getChatRoomParamsForMeetingInvitationsAndUpdates(): ConferenceParams? {
+            val core = coreContext.core
+            val chatRoomParams = core.createConferenceParams(null)
             chatRoomParams.isChatEnabled = true
             chatRoomParams.isGroupEnabled = false
             chatRoomParams.subject = "Meeting invitation" // Won't be used
             val chatParams = chatRoomParams.chatParams ?: return null
             chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
-            chatParams.backend = ChatRoom.Backend.FlexisipChat
-            chatRoomParams.securityLevel = Conference.SecurityLevel.EndToEnd
+
+            if (isEndToEndEncryptedChatAvailable(core)) {
+                Log.i("$TAG LIME is available, sending invitation through 1-1 E2E encrypted chat rooms with each participant")
+                chatParams.backend = ChatRoom.Backend.FlexisipChat
+                chatRoomParams.securityLevel = Conference.SecurityLevel.EndToEnd
+            } else {
+                Log.w("$TAG LIME is not available, sending invitation through 1-1 clear text chat rooms with each participant")
+                chatParams.backend = ChatRoom.Backend.Basic
+                chatRoomParams.securityLevel = Conference.SecurityLevel.None
+            }
             return chatRoomParams
         }
 

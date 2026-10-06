@@ -22,6 +22,7 @@ package org.linphone.ui.main.chat.viewmodel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.text.Spannable
+import android.view.inputmethod.EditorInfo
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.core.app.ActivityCompat
@@ -112,6 +113,8 @@ class SendMessageInConversationViewModel
 
     val isComputingParticipantsList = MutableLiveData<Boolean>()
 
+    val imeFlags = MutableLiveData<Int>()
+
     private lateinit var voiceRecordPlayer: Player
 
     private val playerListener = PlayerListener {
@@ -150,6 +153,8 @@ class SendMessageInConversationViewModel
     private var voiceRecordAudioFocusRequest: AudioFocusRequestCompat? = null
 
     private var participantsListFilter = ""
+
+    private var capturedPicturedPath = ""
 
     private val chatRoomListener = object : ChatRoomListenerStub() {
         @WorkerThread
@@ -212,6 +217,14 @@ class SendMessageInConversationViewModel
         chatRoom = room
         coreContext.postOnCoreThread {
             chatRoom.addListener(chatRoomListener)
+
+            val ime = if (chatRoom.hasCapability(ChatRoom.Capabilities.Encrypted.toInt())) {
+                EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
+            } else {
+                EditorInfo.IME_NULL
+            }
+            imeFlags.postValue(ime)
+
             computeParticipantsList()
         }
     }
@@ -611,24 +624,45 @@ class SendMessageInConversationViewModel
         }
     }
 
+    @UiThread
+    fun setCapturedPicturePath(path: String) {
+        capturedPicturedPath = path
+    }
+
+    @UiThread
+    fun getCapturedPicturePath(): String {
+        return capturedPicturedPath
+    }
+
+    @UiThread
+    fun clearCapturedPicturePath() {
+        capturedPicturedPath = ""
+    }
+
     @WorkerThread
     private fun computeParticipantsList(filter: String = "") {
         isComputingParticipantsList.postValue(true)
         val participantsList = arrayListOf<ParticipantModel>()
 
-        for (participant in chatRoom.participants) {
-            val model = ParticipantModel(participant.address, onClicked = { clicked ->
-                Log.i("$TAG Clicked on participant [${clicked.sipUri}]")
-                coreContext.postOnCoreThread {
-                    val username = clicked.address.username
-                    if (!username.isNullOrEmpty()) {
-                        participantUsernameToAddEvent.postValue(Event(username.substring(participantsListFilter.length)))
+        if (::chatRoom.isInitialized) {
+            for (participant in chatRoom.participants) {
+                val model = ParticipantModel(participant.address, onClicked = { clicked ->
+                    Log.i("$TAG Clicked on participant [${clicked.sipUri}]")
+                    coreContext.postOnCoreThread {
+                        val username = clicked.address.username
+                        if (!username.isNullOrEmpty()) {
+                            participantUsernameToAddEvent.postValue(Event(username.substring(participantsListFilter.length)))
+                        }
                     }
-                }
-            })
+                })
 
-            if (filter.isEmpty() || participant.address.asStringUriOnly().contains(filter) || model.avatarModel.contactName?.contains(filter) == true) {
-                participantsList.add(model)
+                if (
+                    filter.isEmpty() ||
+                    participant.address.asStringUriOnly().contains(filter) ||
+                    model.avatarModel.contactName?.contains(filter) == true
+                ) {
+                    participantsList.add(model)
+                }
             }
         }
 

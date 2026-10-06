@@ -19,6 +19,7 @@
  */
 package org.linphone.ui.assistant.fragment
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -28,6 +29,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -36,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.R
+import org.linphone.compatibility.Compatibility
 import org.linphone.core.TransportType
 import org.linphone.core.tools.Log
 import org.linphone.databinding.AssistantThirdPartySipAccountLoginFragmentBinding
@@ -70,6 +73,16 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
     }
 
     private lateinit var adapter: ArrayAdapter<String>
+
+    private val accessLocalNetworkPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.i("$TAG ACCESS_LOCAL_NETWORK permission has been granted")
+        } else {
+            Log.w("$TAG ACCESS_LOCAL_NETWORK permission has been denied!")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -133,6 +146,10 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
                     message,
                     R.drawable.warning_circle
                 )
+                if (!Compatibility.isAccessLocalNetworkPermissionGranted(requireContext())) {
+                    Log.w("$TAG Asking for ACCESS_LOCAL_NETWORK permission")
+                    accessLocalNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+                }
             }
         }
 
@@ -148,7 +165,7 @@ class ThirdPartySipAccountLoginFragment : GenericFragment() {
                 val username = pair.second
 
                 Log.i(
-                    "$TAG Navigating to Single Sign On Fragment with server URL [$serverUrl] and username [$username]"
+                    "$TAG Bearer auth request, navigating to Single Sign On Fragment with server URL [$serverUrl] and username [$username]"
                 )
                 val intent = Intent(requireContext(), SingleSignOnActivity::class.java)
                 intent.putExtra(SingleSignOnActivity.INTENT_EXTRA_USERNAME, username)

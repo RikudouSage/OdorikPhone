@@ -52,12 +52,13 @@ class MediaViewerFragment : GenericMainFragment() {
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar) {
+            viewModel.automaticallyStartPlaying = viewModel.isMediaPlaying.value == true
             viewModel.pause()
         }
 
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             val newPosition = seekBar.progress
-            viewModel.seekTo(newPosition)
+            viewModel.seekTo(newPosition, viewModel.automaticallyStartPlaying)
         }
     }
 
@@ -109,7 +110,7 @@ class MediaViewerFragment : GenericMainFragment() {
             it.consume { pair ->
                 val width = pair.first
                 val height = pair.second
-                Log.i("$TAG Updating video texture ration to ${width}x$height")
+                Log.i("$TAG Updating video texture ratio to ${width}x$height")
                 binding.videoPlayer.setAspectRatio(width, height)
             }
         }
@@ -156,10 +157,15 @@ class MediaViewerFragment : GenericMainFragment() {
             }
         }
 
-        viewModel.play()
+        if (viewModel.automaticallyStartPlaying) {
+            Log.i("$TAG Fragment has been resumed, starting media player")
+            viewModel.play()
+        }
     }
 
     override fun onPause() {
+        viewModel.automaticallyStartPlaying = viewModel.isMediaPlaying.value == true
+
         if (viewModel.isMediaPlaying.value == true) {
             Log.i("$TAG Paused, stopping media player")
             viewModel.pause()

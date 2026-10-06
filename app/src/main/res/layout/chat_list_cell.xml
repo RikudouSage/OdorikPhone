@@ -83,14 +83,13 @@
             app:layout_constraintStart_toStartOf="@id/title"
             app:layout_constraintEnd_toStartOf="@id/last_message_icon"
             app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintBottom_toTopOf="@id/separator"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageView
             android:id="@+id/conversation_removal_in_progress"
             android:layout_width="@dimen/small_icon_size"
             android:layout_height="@dimen/small_icon_size"
-            android:layout_marginStart="@{model.lastMessageTextSender.length() > 0 &amp;&amp; !model.isComposing ? @dimen/five : @dimen/zero}"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="3sp"
             android:layout_marginTop="3dp"
             android:src="@drawable/animated_in_progress"
             android:visibility="@{model.isBeingDeleted ? View.VISIBLE : View.GONE}"
@@ -106,8 +105,7 @@
             android:id="@+id/last_message_icon"
             android:layout_width="@dimen/small_icon_size"
             android:layout_height="@dimen/small_icon_size"
-            android:layout_marginStart="@{model.lastMessageTextSender.length() > 0 &amp;&amp; !model.isComposing ? @dimen/five : @dimen/zero}"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="3sp"
             android:layout_marginTop="3dp"
             android:src="@{model.isComposing ? model.composingIcon : model.lastMessageContentIcon, default=@drawable/forward}"
             android:visibility="@{model.isBeingDeleted ? View.GONE : model.lastMessageContentIcon > 0 || model.isComposing ? View.VISIBLE : View.GONE}"
@@ -158,7 +156,7 @@
             android:visibility="@{model.unreadMessageCount > 0 ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/date_time"
-            app:layout_constraintBottom_toTopOf="@id/separator"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageView
             android:id="@+id/last_sent_message_status"
@@ -170,7 +168,7 @@
             android:visibility="@{model.isLastMessageOutgoing ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/notifications_count"
             app:layout_constraintTop_toBottomOf="@id/date_time"
-            app:layout_constraintBottom_toTopOf="@id/separator"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:tint="?attr/color_main1_500" />
 
         <ImageView
@@ -183,7 +181,7 @@
             android:visibility="@{model.isMuted ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/last_sent_message_status"
             app:layout_constraintTop_toBottomOf="@id/date_time"
-            app:layout_constraintBottom_toTopOf="@id/separator"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:tint="?attr/color_main2_600" />
 
         <ImageView
@@ -196,7 +194,7 @@
             android:visibility="@{model.isEphemeral ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/muted"
             app:layout_constraintTop_toBottomOf="@id/date_time"
-            app:layout_constraintBottom_toTopOf="@id/separator"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:tint="?attr/color_main2_600" />
 
         <ImageView
@@ -209,21 +207,9 @@
             android:contentDescription="@string/content_description_chat_unsecured"
             android:visibility="@{model.isEncrypted || !model.isEncryptionAvailable ? View.GONE : View.VISIBLE}"
             app:layout_constraintTop_toBottomOf="@id/date_time"
-            app:layout_constraintBottom_toTopOf="@id/separator"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ephemeral"
             app:tint="?attr/color_plain_text_security_warning_600" />
-
-        <View
-            android:id="@+id/separator"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginEnd="10dp"
-            android:background="?attr/color_separator"
-            android:visibility="gone"
-            android:importantForAccessibility="no"
-            app:layout_constraintStart_toStartOf="@id/title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

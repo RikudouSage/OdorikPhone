@@ -67,6 +67,8 @@ class RecordingMediaPlayerViewModel
 
     val dateTime = MutableLiveData<String>()
 
+    var automaticallyStartPlaying = true
+
     private var audioFocusRequest: AudioFocusRequestCompat? = null
 
     private val playerListener = PlayerListener {
@@ -96,6 +98,10 @@ class RecordingMediaPlayerViewModel
 
     @UiThread
     fun loadRecording(model: RecordingModel) {
+        if (::recordingModel.isInitialized && recordingModel == model) {
+            Log.w("$TAG Media player already configured for this file, doing nothing (device was probably rotated)")
+            return
+        }
         recordingModel = model
 
         formattedDuration.postValue(model.formattedDuration)
@@ -113,8 +119,12 @@ class RecordingMediaPlayerViewModel
     fun setVideoRenderingSurface(textureView: TextureView) {
         val texture = textureView.surfaceTexture
         coreContext.postOnCoreThread {
-            Log.i("$TAG Setting window ID in player")
-            player.setWindowId(texture)
+            if (::player.isInitialized) {
+                Log.i("$TAG Setting window ID in player")
+                player.setWindowId(texture)
+            } else {
+                Log.e("$TAG Player hasn't been created yet, can't set the video texture")
+            }
         }
     }
 
@@ -176,10 +186,12 @@ class RecordingMediaPlayerViewModel
     }
 
     @UiThread
-    fun seekTo(position: Int) {
+    fun seekTo(position: Int, resumePlay: Boolean) {
         coreContext.postOnCoreThread {
             seekPlaybackTo(position)
-            startPlayback()
+            if (resumePlay) {
+                startPlayback()
+            }
         }
     }
 
