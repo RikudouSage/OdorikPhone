@@ -100,9 +100,12 @@ jobs:
           test "${#apk_files[@]}" -eq 1
           gh release upload "$RELEASE_TAG" "${apk_files[0]}" --clobber
 
-      - name: Mark GitHub release as latest
+      - name: Promote GitHub release and mark it as latest
         if: github.event_name == 'release'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release edit "$RELEASE_TAG" --latest
+          RELEASE_ID: ${{ github.event.release.id }}
+        run: |
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" \
+            -F prerelease=false \
+            --raw-field make_latest=true
