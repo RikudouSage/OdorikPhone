@@ -48,7 +48,9 @@ class QrCodeViewModel
         @WorkerThread
         override fun onConfiguringStatus(core: Core, status: ConfiguringState, message: String?) {
             Log.i("$TAG Configuring state is [$status]")
-            if (status == ConfiguringState.Failed) {
+            if (status == ConfiguringState.Successful) {
+                core.provisioningUri = null
+            } else if (status == ConfiguringState.Failed) {
                 Log.e("$TAG Failure applying remote provisioning: $message")
                 showRedToast(R.string.remote_provisioning_config_failed_toast, R.drawable.warning_circle)
                 onErrorEvent.postValue(Event(true))
