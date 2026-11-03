@@ -390,7 +390,7 @@ class CorePreferences
 
     @get:AnyThread
     val disableChat: Boolean
-        get() = config.getBool("ui", "disable_chat_feature", false)
+        get() = config.getBool("ui", "disable_chat_feature", true)
 
     @get:AnyThread
     val disableMeetings: Boolean

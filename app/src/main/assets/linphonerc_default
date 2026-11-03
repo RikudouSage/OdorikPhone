@@ -52,6 +52,11 @@ return_empty_friends=1
 imdn_to_everybody_threshold=1
 
 [ui]
+# TODO(odorik): Re-enable messages once the Odorik-side issue is fixed:
+# 1. Remove this setting (or set it to 0) and restore CorePreferences.disableChat's default to false.
+# 2. Verify the conversations tab, contact/history/call shortcuts, sharing intents,
+#    existing launcher shortcuts, and message notifications all work end-to-end.
+disable_chat_feature=1
 contacts_filter=sip.linphone.org
 
 [account_creator]
