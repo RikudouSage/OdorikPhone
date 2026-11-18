@@ -25,12 +25,14 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
+import android.util.Base64
 import android.util.Patterns
 import androidx.annotation.AnyThread
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.WorkerThread
 import androidx.core.text.toSpannable
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Locale
 import org.linphone.LinphoneApplication.Companion.coreContext
@@ -429,6 +431,38 @@ class LinphoneUtils {
         }
 
         @WorkerThread
+        fun getChatRoomParamsForOneToOneConversationWithAddress(address: Address, conference: Conference? = null): ConferenceParams? {
+            val account = getDefaultAccount() ?: return null
+
+            val params = coreContext.core.createConferenceParams(conference)
+            params.isChatEnabled = true
+            params.isGroupEnabled = false
+            params.account = account
+            params.subject = AppUtils.getString(R.string.conversation_one_to_one_hidden_subject)
+            val chatParams = params.chatParams ?: return null
+
+            val sameDomain = address.domain == corePreferences.defaultDomain && address.domain == account.params.domain
+            if (account.params.instantMessagingEncryptionMandatory && sameDomain) {
+                chatParams.backend = ChatRoom.Backend.FlexisipChat
+                params.securityLevel = Conference.SecurityLevel.EndToEnd
+            } else if (!account.params.instantMessagingEncryptionMandatory) {
+                if (isEndToEndEncryptedChatAvailable(coreContext.core)) {
+                    chatParams.backend = ChatRoom.Backend.FlexisipChat
+                    params.securityLevel = Conference.SecurityLevel.EndToEnd
+                } else if (isGroupChatAvailable(coreContext.core)) {
+                    chatParams.backend = ChatRoom.Backend.FlexisipChat
+                    params.securityLevel = Conference.SecurityLevel.None
+                } else {
+                    chatParams.backend = ChatRoom.Backend.Basic
+                    params.securityLevel = Conference.SecurityLevel.None
+                }
+            } else {
+                return null
+            }
+            return params
+        }
+
+        @WorkerThread
         fun arePushNotificationsAvailable(core: Core): Boolean {
             if (!core.isPushNotificationAvailable) {
                 Log.w(
@@ -812,6 +846,33 @@ class LinphoneUtils {
                 }
                 else -> "${device.deviceName}(${device.type})"
             }
+        }
+
+        @AnyThread
+        fun jwtTokenToJson(token: String): JSONObject? {
+            val parts = token.split(".")
+            if (parts.size < 2) {
+                Log.e("$TAG Failed to parse JWT token, at least a '.' character was expected!")
+                return null
+            }
+
+            // base64url -> standard base64
+            var b64 = parts[1].replace("-", "+").replace("_", "/")
+            // Fix padding if needed
+            while (b64.length % 4 != 0) {
+                b64 = "$b64="
+            }
+            try {
+                val bytes = Base64.decode(b64, Base64.DEFAULT)
+                val decoded = String(bytes, charset("UTF-8"))
+                val json = JSONObject(decoded)
+                Log.i("$TAG Successfully decoded JWT token")
+                return json
+            } catch (exception: Exception) {
+                Log.e("$TAG Failed to parse base64: $exception")
+            }
+
+            return null
         }
     }
 }
